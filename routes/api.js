@@ -4,15 +4,13 @@ var bodyParser = require('body-parser');
 
 router.use(bodyParser.json());
 
-let post = {
-  data: [], 
-};
+let data = [];
 router.get('/', (req, res) => {
   res.json(data);        
 });
 
 router.get('/comments', (req, res) => {
-  res.send('get comment');
+  res.json(data);
 })
 router.post('/comments', (req, res) => {
   console.log('success');        
@@ -22,8 +20,17 @@ router.post('/comments', (req, res) => {
     user: r.user,
     content: r.content,
     time: r.time,
+    comments: [],
   }
-  post.data.push(d); 
+  console.log( d.time);
+  data.push(d); 
 });
+
+router.post('/reply', (req, res) => {
+  console.log('success');        
+  const r = req.body;
+  data[r.id].comments = r.comments; 
+});
+
 
 module.exports = router;

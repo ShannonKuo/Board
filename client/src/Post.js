@@ -1,22 +1,24 @@
 import React, { Component } from 'react';
 import './App.css';
 import Comments from './Comments';
+
 // material ui
-//import FloatingActionButton from 'material-ui/FloatingActionButton';
-//import ContentAdd from 'material-ui/svg-icons/content/add';
-//import IconButton from 'material-ui/IconButton';
-//import TextField from 'material-ui/TextField';
+import FloatingActionButton from 'material-ui/FloatingActionButton';
+import ContentAdd from 'material-ui/svg-icons/content/add';
+import IconButton from 'material-ui/IconButton';
+import TextField from 'material-ui/TextField';
+import FlatButton from 'material-ui/FlatButton';
 
 class Post extends Component {
   constructor() {
     super();
     this.state = {
-      newComment: { id: '', user: '', content: '' },
+      newComment: { id: '', user: '', content: '', time: '' },
       index: 0,
     }
     this.handleUserChange=this.handleUserChange.bind(this);
     this.handleCommentChange = this.handleCommentChange.bind(this);
-    this.handleAddComment = this.handleAddComment.bind(this);
+    this.handleSubmitComment = this.handleSubmitComment.bind(this);
   };
   handleUserChange(e) {
     this.setState({
@@ -35,52 +37,61 @@ class Post extends Component {
                   }
     });
   }
-  handleAddComment(id) {
-    console.log(id);
-    this.props.handleAddComment(this.state.newComment, id);
+  handleSubmitComment(id) {
+    let data = this.state.newComment;
+    data.time = Date();
+    this.props.handleSubmitComment(data, id);
     this.setState({ index: this.state.index + 1 })
-    this.setState({ newComment: { id: '', user: '', content: '' } });
-  }
-  handlePressEnter() {
-  
+    this.setState({ newComment: { id: '', user: '', content: '', time: '' } });
   }
 
   render() {
     const comments = this.props.post.comments;
+    this.state.index=this.props.post.comments.length;
     return(
       <div>
         <div className="displayPost">
-          <li>{this.props.post.user}</li>
-          <li>{this.props.post.content}</li>
-          <li>{this.props.post.time}</li>
-        </div> 
-        <div className="inputComment">
-          <h2>User</h2>
-          <input
-            type="text"
-            onChange={this.handleUserChange}
-            value={this.state.newComment.user}
-          />
-          <h2>Reply</h2>
-          <input
-            type="text"
-            onChange={this.handleCommentChange}
-            value={this.state.newComment.content}
-          />
-          <button
-            onClick={() => {this.handleAddComment(this.props.post.id)}}
-          >Comment
-          </button>
-        </div>
-        <ul className="comments">
-          {comments.map(comment =>
-            <div className="comment" key={comment.id}>
-              <Comments
-                comment={comment}
+          <div className="postName">
+            <p>{this.props.post.content}</p>
+          </div>
+          <div className="postTime">
+            <p>Posted by  {this.props.post.user}</p>
+            <p>{this.props.post.time}</p>
+            <hr color="#FFFFFF"></hr>
+          </div>
+          <div className="inputComment">
+            <p>write some comments...</p>
+            <p>
+              <TextField
+                type="text"
+                onChange={this.handleUserChange}
+                hintText="user name"
+                value={this.state.newComment.user}
               />
-            </div>,
-          )}
-        </ul>
+            </p>
+            <p>
+              <TextField
+                type="text"
+                onChange={this.handleCommentChange}
+                hintText="comment..."
+                value={this.state.newComment.content}
+              />
+              <FlatButton
+                label="send"
+                onClick={() => {this.handleSubmitComment(this.props.post.id)}}
+              />
+            </p>
+          </div> 
+          <ul className="comments">
+            {comments.map(comment =>
+              <div className="comment" key={comment.id}>
+                <Comments
+                  comment={comment}
+                />
+              </div>,
+            )}
+          </ul>
+        </div>
       </div>
     ) 
   }
