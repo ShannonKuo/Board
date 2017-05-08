@@ -12,11 +12,6 @@
   text-align: center;
   font-size: 1.5cm;
   font-family: 'Marcellus SC', cursive;
-  -webkit-text-fill-color: transparent;
-  background: -webkit-linear-gradient(transparent, transparent), 
-  url("https://cdn.theculturetrip.com/wp-content/uploads/2015/11/BW-Taipei-at-night.jpg") repeat;
-  background: -o-linear-gradient(transparent, transparent);
-  -webkit-background-clip: text;
 }
 .container {
   -webkit-flex: 1;
