@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import Comments from './Comments';
+import Item from './Item';
 
 // material ui
 import FloatingActionButton from 'material-ui/FloatingActionButton';
@@ -13,80 +13,33 @@ class Post extends Component {
   constructor() {
     super();
     this.state = {
-      newComment: { id: '', user: '', content: '', time: '' },
       index: 0,
     }
-    this.handleUserChange=this.handleUserChange.bind(this);
-    this.handleCommentChange = this.handleCommentChange.bind(this);
-    this.handleSubmitComment = this.handleSubmitComment.bind(this);
+    this.handleAddMoney = this.handleAddMoney.bind(this);
   };
-  handleUserChange(e) {
-    this.setState({
-      newComment: { id: this.state.index,
-                    user: e.target.value,
-                    content: this.state.newComment.content
-                  }
-    });
-  }
 
-  handleCommentChange(e) {
-    this.setState({
-      newComment: { id: this.state.index,
-                    user: this.state.newComment.user,
-                    content: e.target.value
-                  }
-    });
+  handleAddMoney(id) {
+    this.props.handleAddMoney(id);
   }
-  handleSubmitComment(id) {
-    let data = this.state.newComment;
-    data.time = Date();
-    this.props.handleSubmitComment(data, id);
-    this.setState({ index: this.state.index + 1 })
-    this.setState({ newComment: { id: '', user: '', content: '', time: '' } });
-  }
-
   render() {
-    const comments = this.props.post.comments;
-    this.state.index=this.props.post.comments.length;
+    const accountings = this.props.post.accounting;
+    this.state.index=this.props.post.accounting.length;
     return(
       <div>
         <div className="displayPost">
           <div className="postName">
-            <p>{this.props.post.content}</p>
+            <p>{this.props.post.user}</p>
           </div>
           <div className="postTime">
-            <p>Posted by  {this.props.post.user}</p>
             <p>{this.props.post.time}</p>
             <hr color="#FFFFFF"></hr>
           </div>
-          <div className="inputComment">
-            <p>write some comments...</p>
-            <p>
-              <TextField
-                type="text"
-                onChange={this.handleUserChange}
-                hintText="user name"
-                value={this.state.newComment.user}
-              />
-            </p>
-            <p>
-              <TextField
-                type="text"
-                onChange={this.handleCommentChange}
-                hintText="comment..."
-                value={this.state.newComment.content}
-              />
-              <FlatButton
-                label="send"
-                onClick={() => {this.handleSubmitComment(this.props.post.id)}}
-              />
-            </p>
-          </div> 
+          <FlatButton label="press me" onClick={() => {this.handleAddMoney(this.props.post.id); }} />
           <ul className="comments">
-            {comments.map(comment =>
-              <div className="comment" key={comment.id}>
-                <Comments
-                  comment={comment}
+            {accountings.map(accounting =>
+              <div className="comment" key={accounting.id}>
+                <Item
+                  post={this.props.post}
                 />
               </div>,
             )}

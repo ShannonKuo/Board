@@ -13,17 +13,21 @@ class Board extends Component {
     super()
     this.state = {
       postList: [],
-      newPost: { id: '', user: '', content: '', comments: [], time: '' },
+      money: '',
+      peopleCnt: 0,
+      newPost: { id: '', user: '', time: '' },
       index: 0,
     }
     this.handleUserChange=this.handleUserChange.bind(this);
     this.handleContentChange=this.handleContentChange.bind(this);
     this.handleAddPost=this.handleAddPost.bind(this);
-    this.handlePostServer=this.handlePostServer.bind(this);
+    //this.handlePostServer=this.handlePostServer.bind(this);
     this.handleSubmit=this.handleSubmit.bind(this);
-    this.handleAddComment=this.handleAddComment.bind(this);
-    this.handleCommentServer=this.handleCommentServer.bind(this);
+    this.handleSubmitMoney=this.handleSubmitMoney.bind(this);
+    this.handleAddMoney=this.handleAddMoney.bind(this);
+    //this.handleCommentServer=this.handleCommentServer.bind(this);
     this.handleSubmitComment=this.handleSubmitComment.bind(this);
+    this.handleSetType=this.handleSetType.bind(this);
   }
   handleUserChange(e) {
     if (e.key === 'Enter'){
@@ -32,7 +36,6 @@ class Board extends Component {
       this.setState({
         newPost: { id: this.state.index,
                    user: e.target.value,
-                   content: this.state.newPost.content
                  },
       });
     }
@@ -42,31 +45,45 @@ class Board extends Component {
       this.handleSubmit();
     } else {
       this.setState({
-        newPost: { id: this.state.index,
-                   user: this.state.newPost.user,
-                   content: e.target.value
-                 },
+        money: e.target.value,
       });
     }
   }
 
   handleAddPost() { 
-    if (this.state.newPost.user !== '' && 
-        this.state.newPost.content !== '') {
+    if (this.state.newPost.user !== '' ) {
       const list = this.state.postList;
       list.push({
         id: this.state.newPost.id,
         user: this.state.newPost.user,
-        content: this.state.newPost.content,
         time: Date(),
-        comments: [],
+        accounting: [],
       });
-
+      console.log("add user");
       this.setState({ postList: list });
       this.setState({ index: this.state.index + 1 });
     }
 
   }
+  handleSubmitMoney() {
+  }
+  handleAddMoney(id) {
+    console.log("add money");
+    this.setState({ peopleCnt: this.state.peopleCnt + 1 });
+    const list = this.state.postList[id];
+    const lists = this.state.postList;
+    console.log(this.state.money);
+    console.log(this.state.peopleCnt + 1);
+    list.accounting.push({
+      id: id,
+      type: '',
+      content: this.state.money / (1 + this.state.peopleCnt),
+      time: '',
+    })
+    lists[id] = list;
+    this.setState({ postList: lists });
+  }
+  /*
   handlePostServer() {
     const data = this.state.newPost;
     data.time = Date();
@@ -84,12 +101,13 @@ class Board extends Component {
       if (!response.ok) throw new Error(response.statusText)
       return response.json()
     })
-    this.setState({ newPost: { id: '', user: '', content: '', time: '' } });
-  }
+    this.setState({ newPost: { id: '', user: '', time: '' } });
+  }*/
   handleSubmit() {
     this.handleAddPost();
-    this.handlePostServer();
+    //this.handlePostServer();
   }
+  /*
   componentDidMount() {
     fetch('/api/comments')
       .then(res => res.json())
@@ -98,15 +116,6 @@ class Board extends Component {
         this.setState({ index: data.length })
       })
       .catch(err => console.error(err));
-  }
-  handleAddComment(newComment, id) {
-    const com=this.state.postList[id].comments;
-    com.push({
-      id: newComment.id,
-      user: newComment.user,
-      content: newComment.content,
-      time: newComment.time,
-    });
   }
   handleCommentServer(id) {
     const data = this.state.postList[id];
@@ -123,17 +132,25 @@ class Board extends Component {
       if (!response.ok) throw new Error(response.statusText)
       return response.json()
     })
-  }
+  }*/
   handleSubmitComment( newComment, id ) {
     this.handleAddComment( newComment, id );
-    this.handleCommentServer( id );
+    //this.handleCommentServer( id );
+  }
+  handleSetType( type ) {
+    this.setState({
+      newPost: {
+        type: type,
+      }
+    }) 
+    console.log(type);
   }
   render() {
     return (
       <div className="Board">
         <div className="boardHeader">
           <div className="title">
-            <h2>Board</h2>
+            <h2>Accounting Manager</h2>
           </div>
           <div className="input">
             <TextField
@@ -142,14 +159,23 @@ class Board extends Component {
               hintText="user name"
               value={this.state.newPost.user}
             />
-            <TextField
-              type="text"
-              onChange={this.handleContentChange}
-              hintText="write something on your post"
-              value={this.state.newPost.content}
-            />
+            <FlatButton label="Add user" onClick={this.handleSubmit}/>
           </div>
-          <FlatButton label="Post" onClick={this.handleSubmit}/>
+          <div>
+            <p>After entering the money, please press the button of the user to add the money~~</p>
+            <p>I
+              <FlatButton label="borrow" onClick={() => {this.handleSetType('borrow');}}/>
+              <FlatButton label="lend" onClick={() => {this.handleSetType('lend');}}/>
+              <TextField
+                type="text"
+                onChange={this.handleContentChange}
+                hintText="input the $$$"
+                value={this.state.money}
+              />
+              from
+            </p>
+            <FlatButton label="Done" onClick={this.handleSubmitMoney}/>
+          </div>
         </div>
 
         <div className="container">
@@ -158,7 +184,9 @@ class Board extends Component {
               <div className="postList" key={post.id}>
                 <Post
                   post={post}  
+                  money={this.state.money}
                   handleSubmitComment={this.handleSubmitComment}
+                  handleAddMoney={this.handleAddMoney}
                 />
               </div>,
             )}
